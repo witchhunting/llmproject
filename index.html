@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Ollama Qwen3 Web</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 24px; }
+    textarea { width: 100%; height: 120px; }
+    button { padding: 8px 12px; margin-top: 8px; }
+    pre { background: #f5f5f5; padding: 12px; white-space: pre-wrap; }
+  </style>
+</head>
+<body>
+  <h1>Qwen3:8b Web chat</h1>
+
+  <textarea id="prompt" placeholder="please quest for me..."></textarea><br>
+  <button id="send">send</button>
+
+  <h3>response</h3>
+  <pre id="out"></pre>
+
+  <script>
+    const promptEl = document.getElementById("prompt");
+    const outEl = document.getElementById("out");
+    document.getElementById("send").onclick = async () => {
+      const prompt = promptEl.value.trim();
+      if (!prompt) return;
+
+      outEl.textContent = "thinking...";
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({prompt})
+      });
+      const data = await res.json();
+      if (!res.ok) outEl.textContent = "¿¡·¯: " + (data.detail || "unknown");
+      else outEl.textContent = data.response;
+    };
+  </script>
+</body>
+</html>
